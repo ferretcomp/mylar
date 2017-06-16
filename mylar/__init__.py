@@ -140,7 +140,7 @@ INSTALL_TYPE = None
 CURRENT_VERSION = None
 LATEST_VERSION = None
 COMMITS_BEHIND = None
-GIT_USER = 'evilhero'
+GIT_USER = 'ferretcomp'
 GIT_BRANCH = None
 USER_AGENT = None
 SEARCH_DELAY = 15
@@ -593,7 +593,7 @@ def initialize():
         CHECK_GITHUB = bool(check_setting_int(CFG, 'General', 'check_github', 1))
         CHECK_GITHUB_ON_STARTUP = bool(check_setting_int(CFG, 'General', 'check_github_on_startup', 0))
         CHECK_GITHUB_INTERVAL = check_setting_int(CFG, 'General', 'check_github_interval', 360)
-        GIT_USER = check_setting_str(CFG, 'General', 'git_user', 'evilhero')
+        GIT_USER = check_setting_str(CFG, 'General', 'git_user', 'ferretcomp')
         GIT_BRANCH = check_setting_str(CFG,'General', 'git_branch', 'master')
 
         DESTINATION_DIR = check_setting_str(CFG, 'General', 'destination_dir', '')
@@ -1180,7 +1180,7 @@ def initialize():
         else:
            vers = 'NONE'
 
-        USER_AGENT = 'Mylar/' +str(hash) +'(' +vers +') +http://www.github.com/evilhero/mylar/'
+        USER_AGENT = 'Mylar/' +str(hash) +'(' +vers +') +http://www.github.com/ferretcomp/mylar/'
 
         CV_HEADERS = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:40.0) Gecko/20100101 Firefox/40.1'}
 
@@ -1221,17 +1221,17 @@ def initialize():
             logger.error('Cannot connect to the database: %s' % e)
 
         # Check for new versions (autoupdate)
-        #if CHECK_GITHUB_ON_STARTUP:
-        #    try:
-        #        LATEST_VERSION = versioncheck.checkGithub()
-        #    except:
-        #        LATEST_VERSION = CURRENT_VERSION
-        #else:
-        #    LATEST_VERSION = CURRENT_VERSION
+        if CHECK_GITHUB_ON_STARTUP:
+            try:
+                LATEST_VERSION = versioncheck.checkGithub()
+            except:
+                LATEST_VERSION = CURRENT_VERSION
+        else:
+            LATEST_VERSION = CURRENT_VERSION
 #
-        #if AUTO_UPDATE:
-        #    if CURRENT_VERSION != LATEST_VERSION and INSTALL_TYPE != 'win' and COMMITS_BEHIND > 0:
-        #        logger.info('Auto-updating has been enabled. Attempting to auto-update.')
+        if AUTO_UPDATE:
+            if CURRENT_VERSION != LATEST_VERSION and INSTALL_TYPE != 'win' and COMMITS_BEHIND > 0:
+                logger.info('Auto-updating has been enabled. Attempting to auto-update.')
 #                SIGNAL = 'update'
 
         #check for syno_fix here
