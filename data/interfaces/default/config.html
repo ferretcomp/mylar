@@ -205,14 +205,14 @@
                     	<legend>Interval</legend>
 	                    <div class="row">
 	                    	<label>NZB Search Interval</label>
-	                    	<input type="text" name="nzb_search_interval" value="${config['nzb_search_interval']}" size="4">mins
+	                    	<input type="text" name="nzb_search_interval" value="${config['nzb_search_interval']}" size="4">secs
                                   <div class="row checkbox">
                                     <input type="checkbox" name="nzb_startup_search" value="1" ${config['nzb_startup_search']} /><label>NZB Search on startup</label>
                                   </div>
                                   <div class="row">
                                       <label>Search delay</label>
-                                      <input type="text" name="search_delay" value="${config['search_delay']}" size="4" />mins
-                                      <small>The amount of time to wait between each search request (minimum is 1 min)</small>
+                                      <input type="text" name="search_delay" value="${config['search_delay']}" size="4" />secs
+                                      <small>The amount of time to wait between each search request (This is now in seconds - set accordingly.)</small>
                                   </div>
                             </div>
                          </fieldset>
@@ -883,6 +883,30 @@
                                     <div class="row"">
                                        <label>Full path to move files determined to be duplicates</label>
                                        <input type="text" name="duplicate_dump" value="${config['duplicate_dump']}" size="30">
+                                    </div>
+                                </div>
+                        </fieldset>
+                    <fieldset>
+                            <legend>Bad Issue Folder</legend>
+                             <div class="row checkbox left clearfix">
+                                 <input type="checkbox" id="enable_badissuesort" onclick="initConfigCheckbox($this));" name="badissuesort" value="1" ${config['badissuesort']} /><label>Enable Bad Issue Sort</label>
+                             </div>
+                                <div class="config">
+                                    <div class="row"">
+                                       <label>Full path to move files determined to be bad</label>
+                                       <input type="text" name="badissuesort_location" value="${config['badissuesort_location']}" size="30">
+                                    </div>
+                                </div>
+                        </fieldset>
+                    <fieldset>
+                            <legend>Post Process failed Folder</legend>
+                             <div class="row checkbox left clearfix">
+                                 <input type="checkbox" id="enable_nomatchissuesort" onclick="initConfigCheckbox($this));" name="nomatchissuesort" value="1" ${config['nomatchissuesort']} /><label>Enable No Match Sort</label>
+                             </div>
+                                <div class="config">
+                                    <div class="row"">
+                                       <label>Full path to move files that don't match</label>
+                                       <input type="text" name="nomatchissuesort_location" value="${config['nomatchissuesort_location']}" size="30">
                                     </div>
                                 </div>
                         </fieldset>
@@ -1813,6 +1837,8 @@
                 initConfigCheckbox("#use_minsize");
                 initConfigCheckbox("#use_maxsize");
                 initConfigCheckbox("#enable_ddump");
+                initConfigCheckbox("#enable_badissuesort");
+                initConfigCheckbox("#enable_nomatchissuesort");
                 initConfigCheckbox("#enable_failed");
                 initConfigCheckbox("#enable_meta");
                 initConfigCheckbox("#zero_level");

@@ -184,8 +184,9 @@ class PostProcessor(object):
                 try:
                     shutil.move(path_to_move, os.path.join(mylar.DUPLICATE_DUMP, file_to_move))
                 except (OSError, IOError):
-                    logger.warn('[DUPLICATE-CLEANUP] Failed to move ' + path_to_move + ' ... to ... ' + os.path.join(mylar.DUPLICATE_DUMP, file_to_move))
-                    return False
+                    logger.warn('[DUPLICATE-CLEANUP] Failed to move ' + path_to_move + ' ... to ... ' + os.path.join(mylar.DUPLICATE_DUMP, file_to_move) + ' - so check that out. ')
+                    #os.remove(path_to_move)
+                    return True
 
                 logger.warn('[DUPLICATE-CLEANUP] Successfully moved ' + path_to_move + ' ... to ... ' + os.path.join(mylar.DUPLICATE_DUMP, file_to_move))
                 return True
@@ -337,7 +338,7 @@ class PostProcessor(object):
 
                 manual_list = []
                 manual_arclist = []
-
+                nonmatch_list = []
                 for fl in filelist['comiclist']:
                     if mylar.ENABLE_TORRENTS:
                         crcchk = None
@@ -374,12 +375,20 @@ class PostProcessor(object):
                         break
                     else:
                         watchvals = []
+                        dontcheckdupe = 0
                         for wv in comicseries:
                             #do some extra checks in here to ignore these types:
                             #check for Paused status /
                             #check for Ended status and 100% completion of issues.
                             if wv['Status'] == 'Paused' or (wv['Have'] == wv['Total'] and not any(['Present' in wv['ComicPublished'], helpers.now()[:4] in wv['ComicPublished']])):
-                                logger.warn(wv['ComicName'] + ' [' + wv['ComicYear'] + '] is either Paused or in an Ended status with 100% completion. Ignoring for match.')
+                                logger.warn(wv['ComicName'] + ' [' + wv['ComicYear'] + '] is either Paused or in an Ended status with 100% completion. Deleting File. I think. Might break shit.')
+                                dontcheckdupe = 1
+                                #dupthis = helpers.duplicate_filecheck(ml['ComicLocation'], wv['ComicID'], IssueID=issueid)
+                                #duplicate_process()
+                                try:
+                                    os.remove(os.path.join(fl['comiclocation'], fl['comicfilename'].decode(mylar.SYS_ENCODING)))
+                                except Exception:
+                                    pass
                                 continue
                             wv_comicname = wv['ComicName']
                             wv_comicpublisher = wv['ComicPublisher']
@@ -581,9 +590,19 @@ class PostProcessor(object):
                                                             "ComicName":       cs['ComicName']})
                                     else:
                                         logger.fdebug(module + '[NON-MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
+                                        nonmatch_list.append({"ComicLocation":   clocation,
+                                                            "ComicID":         cs['ComicID'],
+                                                            "IssueID":         issuechk['IssueID'],
+                                                            "IssueNumber":     issuechk['Issue_Number'],
+                                                            "ComicName":       cs['ComicName']})
                                         continue
                                 else:
                                     logger.fdebug(module + '[NON-MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
+                                    nonmatch_list.append({"ComicLocation":   clocation,
+                                                            "ComicID":         cs['ComicID'],
+                                                            "IssueID":         issuechk['IssueID'],
+                                                            "IssueNumber":     issuechk['Issue_Number'],
+                                                            "ComicName":       cs['ComicName']})
                                     continue
 
                         logger.fdebug(module + '[SUCCESSFUL MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Match verified for ' + helpers.conversion(fl['comicfilename']))
@@ -888,7 +907,16 @@ class PostProcessor(object):
                         myDB.upsert("readinglist", newVal, ctrlVal)
 
                         logger.fdebug(module + ' [' + ml['StoryArc'] + '] Post-Processing completed for: ' + grab_dst)
-
+                if (mylar.NOMATCHSORT == 1):
+                    logger.fdebug('Time to move the non-matches....')
+                    for nomatchcomics in nonmatch_list:
+                        try:
+                            # do move stuff
+                            logger.fdebug('placehodler so this won\'t bitch')
+                        except Exception:
+                            logger.fdebug('placehodler so this won\'t bitch')
+                        else:
+                            logger.info('Issue moved to nonmatch path')
             else:
                 nzbname = self.nzb_name
                 #remove extensions from nzb_name if they somehow got through (Experimental most likely)
@@ -1209,10 +1237,11 @@ class PostProcessor(object):
 
                     dupthis = helpers.duplicate_filecheck(ml['ComicLocation'], ComicID=comicid, IssueID=issueid)
                     if dupthis[0]['action'] == 'dupe_src' or dupthis[0]['action'] == 'dupe_file':
-                        #check if duplicate dump folder is enabled and if so move duplicate file in there for manual intervention.
-                        #'dupe_file' - do not write new file as existing file is better quality
-                        #'dupe_src' - write new file, as existing file is a lesser quality (dupe)
-                        if mylar.DDUMP and not all([mylar.DUPLICATE_DUMP is None, mylar.DUPLICATE_DUMP == '']): #DUPLICATE_DUMP
+                        if dontcheckdupe == 0:
+                            #check if duplicate dump folder is enabled and if so move duplicate file in there for manual intervention.
+                          #'dupe_file' - do not write new file as existing file is better quality
+                         #'dupe_src' - write new file, as existing file is a lesser quality (dupe)
+                          if mylar.DDUMP and not all([mylar.DUPLICATE_DUMP is None, mylar.DUPLICATE_DUMP == '']): #DUPLICATE_DUMP
                             dupchkit = self.duplicate_process(dupthis)
                             if dupchkit == False:
                                 logger.warn('Unable to move duplicate file - skipping post-processing of this file.')
@@ -1220,12 +1249,14 @@ class PostProcessor(object):
 
 
                     if dupthis[0]['action'] == "write" or dupthis[0]['action'] == 'dupe_src':
-                        stat = ' [' + str(i) + '/' + str(len(manual_list)) + ']'
-                        self.Process_next(comicid, issueid, issuenumOG, ml, stat)
-                        dupthis = None
-
+                        if dontcheckdupe == 0:
+                          stat = ' [' + str(i) + '/' + str(len(manual_list)) + ']'
+                          self.Process_next(comicid, issueid, issuenumOG, ml, stat)
+                          dupthis = None
+                        
                 logger.info(module + ' Manual post-processing completed for ' + str(i) + ' issues.')
                 return
+            
             else:
                 comicid = issuenzb['ComicID']
                 issuenumOG = issuenzb['Issue_Number']

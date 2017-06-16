@@ -143,7 +143,7 @@ COMMITS_BEHIND = None
 GIT_USER = 'evilhero'
 GIT_BRANCH = None
 USER_AGENT = None
-SEARCH_DELAY = 1
+SEARCH_DELAY = 15
 
 COMICVINE_API = None
 DEFAULT_CVAPI = '583939a3df0a25fc4e8b7a29934a13078002dc27'
@@ -182,6 +182,10 @@ INTERFACE = None
 DUPECONSTRAINT = None
 DDUMP = False
 DUPLICATE_DUMP = None
+BADISSUESORT = False
+BADISSUESORT_LOCATION = None
+NOMATCHISSUESORT = False
+NOMATCHISSUESORT_LOCATION = None
 PREFERRED_QUALITY = 0
 CORRECT_METADATA = False
 MOVE_FILES = False
@@ -500,7 +504,7 @@ def initialize():
                 SNATCHED_QUEUE, SNPOOL, AUTO_SNATCH, AUTO_SNATCH_SCRIPT, LOCAL_TORRENT_PP, WANTED_TAB_OFF, LOCAL_IP, EXT_IP, HTTP_PORT, HTTP_HOST, HTTP_USERNAME, HTTP_PASSWORD, HTTP_ROOT, ENABLE_HTTPS, HTTPS_CERT, HTTPS_KEY, HTTPS_CHAIN, HTTPS_FORCE_ON, HOST_RETURN, API_ENABLED, API_KEY, DOWNLOAD_APIKEY, LAUNCH_BROWSER, GIT_PATH, SAFESTART, NOWEEKLY, AUTO_UPDATE, \
                 IMPORT_STATUS, IMPORT_FILES, IMPORT_TOTALFILES, IMPORT_CID_COUNT, IMPORT_PARSED_COUNT, IMPORT_FAILURE_COUNT, CHECKENABLED, \
                 CURRENT_VERSION, LATEST_VERSION, CHECK_GITHUB, CHECK_GITHUB_ON_STARTUP, CHECK_GITHUB_INTERVAL, GIT_USER, GIT_BRANCH, USER_AGENT, DESTINATION_DIR, MULTIPLE_DEST_DIRS, CREATE_FOLDERS, DELETE_REMOVE_DIR, \
-                DOWNLOAD_DIR, USENET_RETENTION, SEARCH_INTERVAL, NZB_STARTUP_SEARCH, INTERFACE, DUPECONSTRAINT, DDUMP, DUPLICATE_DUMP, AUTOWANT_ALL, AUTOWANT_UPCOMING, ZERO_LEVEL, ZERO_LEVEL_N, COMIC_COVER_LOCAL, HIGHCOUNT, \
+                DOWNLOAD_DIR, USENET_RETENTION, SEARCH_INTERVAL, NZB_STARTUP_SEARCH, INTERFACE, DUPECONSTRAINT, DDUMP, DUPLICATE_DUMP, BADISSUESORT, BADISSUESORT_LOCATION, NOMATCHISSUESORT, NOMATCHISSUESORT_LOCATION,AUTOWANT_ALL, AUTOWANT_UPCOMING, ZERO_LEVEL, ZERO_LEVEL_N, COMIC_COVER_LOCAL, HIGHCOUNT, \
                 DOWNLOAD_SCAN_INTERVAL, FOLDER_SCAN_LOG_VERBOSE, IMPORTLOCK, NZB_DOWNLOADER, USE_SABNZBD, SAB_HOST, SAB_USERNAME, SAB_PASSWORD, SAB_APIKEY, SAB_CATEGORY, SAB_PRIORITY, SAB_TO_MYLAR, SAB_DIRECTORY, USE_BLACKHOLE, BLACKHOLE_DIR, ADD_COMICS, COMIC_DIR, IMP_MOVE, IMP_RENAME, IMP_METADATA, \
                 USE_NZBGET, NZBGET_HOST, NZBGET_PORT, NZBGET_USERNAME, NZBGET_PASSWORD, NZBGET_CATEGORY, NZBGET_PRIORITY, NZBGET_DIRECTORY, NZBSU, NZBSU_UID, NZBSU_APIKEY, NZBSU_VERIFY, DOGNZB, DOGNZB_APIKEY, DOGNZB_VERIFY, \
                 NEWZNAB, NEWZNAB_NAME, NEWZNAB_HOST, NEWZNAB_APIKEY, NEWZNAB_VERIFY, NEWZNAB_UID, NEWZNAB_ENABLED, EXTRA_NEWZNABS, NEWZNAB_EXTRA, \
@@ -587,7 +591,7 @@ def initialize():
         CACHE_DIR = check_setting_str(CFG, 'General', 'cache_dir', '')
 
         CHECK_GITHUB = bool(check_setting_int(CFG, 'General', 'check_github', 1))
-        CHECK_GITHUB_ON_STARTUP = bool(check_setting_int(CFG, 'General', 'check_github_on_startup', 1))
+        CHECK_GITHUB_ON_STARTUP = bool(check_setting_int(CFG, 'General', 'check_github_on_startup', 0))
         CHECK_GITHUB_INTERVAL = check_setting_int(CFG, 'General', 'check_github_interval', 360)
         GIT_USER = check_setting_str(CFG, 'General', 'git_user', 'evilhero')
         GIT_BRANCH = check_setting_str(CFG,'General', 'git_branch', 'master')
@@ -618,6 +622,10 @@ def initialize():
         DUPECONSTRAINT = check_setting_str(CFG, 'General', 'dupeconstraint', 'filesize')
         DDUMP = bool(check_setting_int(CFG, 'General', 'ddump', 0))
         DUPLICATE_DUMP = check_setting_str(CFG, 'General', 'duplicate_dump', '')
+        BADISSUESORT = bool(check_setting_int(CFG, 'General', 'badissuesort', 0))
+        BADISSUESORT_LOCATION = check_setting_str(CFG, 'General', 'badissuesort_location', '')
+        NOMATCHISSUESORT = bool(check_setting_int(CFG, 'General', 'nomatchissuesort', 0))
+        NOMATCHDISSUESORT_LOCATION = check_setting_str(CFG, 'General', 'nomatchissuesort_location', '')
         PULL_REFRESH = check_setting_str(CFG, 'General', 'pull_refresh', '')
         AUTOWANT_ALL = bool(check_setting_int(CFG, 'General', 'autowant_all', 0))
         AUTOWANT_UPCOMING = bool(check_setting_int(CFG, 'General', 'autowant_upcoming', 1))
@@ -1213,17 +1221,17 @@ def initialize():
             logger.error('Cannot connect to the database: %s' % e)
 
         # Check for new versions (autoupdate)
-        if CHECK_GITHUB_ON_STARTUP:
-            try:
-                LATEST_VERSION = versioncheck.checkGithub()
-            except:
-                LATEST_VERSION = CURRENT_VERSION
-        else:
-            LATEST_VERSION = CURRENT_VERSION
+        #if CHECK_GITHUB_ON_STARTUP:
+        #    try:
+        #        LATEST_VERSION = versioncheck.checkGithub()
+        #    except:
+        #        LATEST_VERSION = CURRENT_VERSION
+        #else:
+        #    LATEST_VERSION = CURRENT_VERSION
 #
-        if AUTO_UPDATE:
-            if CURRENT_VERSION != LATEST_VERSION and INSTALL_TYPE != 'win' and COMMITS_BEHIND > 0:
-                logger.info('Auto-updating has been enabled. Attempting to auto-update.')
+        #if AUTO_UPDATE:
+        #    if CURRENT_VERSION != LATEST_VERSION and INSTALL_TYPE != 'win' and COMMITS_BEHIND > 0:
+        #        logger.info('Auto-updating has been enabled. Attempting to auto-update.')
 #                SIGNAL = 'update'
 
         #check for syno_fix here
@@ -1468,6 +1476,10 @@ def config_write():
     new_config['General']['dupeconstraint'] = DUPECONSTRAINT
     new_config['General']['ddump'] = int(DDUMP)
     new_config['General']['duplicate_dump'] = DUPLICATE_DUMP
+    new_config['General']['badissuesort'] = int(BADISSUESORT)
+    new_config['General']['badissuesort_location'] = BADISSUESORT_LOCATION
+    new_config['General']['nomatchissuesort'] = int(NOMATCHISSUESORT)
+    new_config['General']['nomatchissuesort_location'] = NOMATCHISSUESORT_LOCATION
     new_config['General']['pull_refresh'] = PULL_REFRESH
     new_config['General']['autowant_all'] = int(AUTOWANT_ALL)
     new_config['General']['autowant_upcoming'] = int(AUTOWANT_UPCOMING)

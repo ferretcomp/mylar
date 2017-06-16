@@ -4252,6 +4252,10 @@ class WebInterface(object):
                     "dupeconstraint": mylar.DUPECONSTRAINT,
                     "ddump": helpers.checked(mylar.DDUMP),
                     "duplicate_dump": mylar.DUPLICATE_DUMP,
+                    "badissuesort": helpers.checked(mylar.BADISSUESORT),
+                    "badissuesort_location": mylar.BADISSUESORT_LOCATION,
+                    "nomatchissuesort": helpers.checked(mylar.NOMATCHISSUESORT),
+                    "nomatchissuesort_location": mylar.NOMATCHISSUESORT_LOCATION,
                     "autowant_all": helpers.checked(mylar.AUTOWANT_ALL),
                     "autowant_upcoming": helpers.checked(mylar.AUTOWANT_UPCOMING),
                     "comic_cover_local": helpers.checked(mylar.COMIC_COVER_LOCAL),
@@ -4537,7 +4541,7 @@ class WebInterface(object):
         rtorrent_host=None, rtorrent_ssl=0, rtorrent_verify=0, rtorrent_authentication='basic', rtorrent_rpc_url=None, rtorrent_username=None, rtorrent_password=None, rtorrent_directory=None, rtorrent_label=None, rtorrent_startonload=0, transmission_host=None, transmission_username=None, transmission_password=None, transmission_directory=None,deluge_host=None, deluge_username=None, deluge_password=None, deluge_label=None,
         qbittorrent_host=None, qbittorrent_username=None, qbittorrent_password=None, qbittorrent_label=None, qbittorrent_folder=None, qbittorrent_startonload=0,
         preferred_quality=0, move_files=0, rename_files=0, add_to_csv=1, cvinfo=0, lowercase_filenames=0, folder_format=None, file_format=None, enable_extra_scripts=0, extra_scripts=None, enable_snatch_script=0, snatch_script=None, enable_pre_scripts=0, pre_scripts=None, post_processing=0, file_opts=None, syno_fix=0, search_delay=None, enforce_perms=0, chmod_dir=0777, chmod_file=0660, chowner=None, chgroup=None,
-        tsab=None, destination_dir=None, create_folders=1, replace_spaces=0, replace_char=None, use_minsize=0, minsize=None, use_maxsize=0, maxsize=None, autowant_all=0, autowant_upcoming=0, comic_cover_local=0, zero_level=0, zero_level_n=None, interface=None, dupeconstraint=None, ddump=0, duplicate_dump=None, **kwargs):
+        tsab=None, destination_dir=None, create_folders=1, replace_spaces=0, replace_char=None, use_minsize=0, minsize=None, use_maxsize=0, maxsize=None, autowant_all=0, autowant_upcoming=0, comic_cover_local=0, zero_level=0, zero_level_n=None, interface=None, dupeconstraint=None, ddump=0, duplicate_dump=None, badissuesort=0, badissuesort_location=None, nomatchissuesort=0, nomatchissuesort_location=None,**kwargs):
         mylar.COMICVINE_API = comicvine_api
         mylar.HTTP_HOST = http_host
         mylar.HTTP_PORT = http_port
@@ -4698,6 +4702,10 @@ class WebInterface(object):
         mylar.DUPECONSTRAINT = dupeconstraint
         mylar.DDUMP = ddump
         mylar.DUPLICATE_DUMP = duplicate_dump
+        mylar.BADISSUESORT = badissuesort
+        mylar.BADISSUESORT_LOCATION = badissuesort_location
+        mylar.NOMATCHISSUESORT = nomatchissuesort
+        mylar.NOMATCHISSUESORT_LOCATION = nomatchissuesort_location
         mylar.ENABLE_EXTRA_SCRIPTS = enable_extra_scripts
         mylar.EXTRA_SCRIPTS = extra_scripts
         mylar.ENABLE_SNATCH_SCRIPT = enable_snatch_script

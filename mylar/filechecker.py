@@ -178,7 +178,9 @@ class FileChecker(object):
                                                   'series_volume':  runresults['series_volume'],
                                                   'issue_year':     runresults['issue_year'],
                                                   'issue_number':   runresults['issue_number'],
-                                                  'scangroup':      runresults['scangroup']
+                                                  'scangroup':      runresults['scangroup'],
+                                                  'ComicFilename':           runresults['comicfilename'],
+                                                  'ComicLocation':           runresults['comiclocation']
                                                   })
 
         watchmatch['comiccount'] = comiccnt
@@ -187,7 +189,24 @@ class FileChecker(object):
 
         if len(self.failed_files) > 0:
             logger.info('FAILED FILES: %s', self.failed_files)
-       
+            if (mylar.BADISSUESORT == 1) :
+                logger.info('Attempting to move bad files...')
+                checkfiledestination =  mylar.filechecker.validateAndCreateDirectory(mylar.BADISSUESORT_LOCATION, create=True)
+                if not checkfiledestination:
+                    logger.warn('Error trying to validate/create directory for misfit comics. Skipping baddies.')
+                else:
+                    for badfiles in self.failed_files:
+                        totalcomicpath = os.path.join(badfiles['ComicLocation'],badfiles['ComicFilename'])
+                        newcomicpathforbaddie = os.path.join(mylar.BADISSUESORT_LOCATION,badfiles['ComicFilename'])
+                        try:
+                            os.rename(totalcomicpath,newcomicpathforbaddie)
+                        except Exception as e:
+                            logger.error("Unable to move bad issue:" + badfiles['ComicFilename'] + " to " + newcomicpathforbaddie + "with this error: " +str(e))
+                        else:
+                            logger.info("Bad issue \"" + badfiles['ComicFilename'] + "\" has been moved to " + newcomicpathforbaddie + " for further investigation.")
+            else:            
+                logger.info('I didn\'t catch bad issue sort. I see the value as: ' + mylar.BADISSUESORT)
+            
         return watchmatch
 
     def parseit(self, path, filename, subpath=None):

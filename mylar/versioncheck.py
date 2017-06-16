@@ -157,7 +157,7 @@ def getVersion():
             logger.warn('Unable to determine which commit is currently being run. Defaulting to Master branch.')
 
 def checkGithub():
-
+    #gogs API get for now: 36c7d3aded6a3332d14dc1ba3baddeacabf671a3
     # Get the latest commit available from github
     url = 'https://api.github.com/repos/%s/mylar/commits/%s' % (mylar.GIT_USER, mylar.GIT_BRANCH)
     logger.info ('Retrieving latest version information from github')
