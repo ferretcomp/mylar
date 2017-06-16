@@ -911,7 +911,7 @@ class PostProcessor(object):
                     logger.fdebug('Time to move the non-matches....')
                     for nomatchcomics in nonmatch_list:
                         try:
-                            # do move stuff
+                            os.rename(nonmatch_list['comiclocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nonmatch_list['comicname']))
                             logger.fdebug('placehodler so this won\'t bitch')
                         except Exception:
                             logger.fdebug('placehodler so this won\'t bitch')
