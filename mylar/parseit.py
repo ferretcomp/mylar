@@ -204,7 +204,7 @@ def GCDdetails(comseries, resultURL, vari_loop, ComicID, TotalIssues, issvariati
                 try:
                     soup = BeautifulSoup(urllib2.urlopen(inputMIS)).decode('utf-8', 'ignore')
                 except UnicodeDecodeError:
-                    logger.info("not working...aborting. Tell Evilhero.")
+                    logger.info("not working...aborting. Tell Ferretcomp.")
                     return
             #If CV doesn't have the Series Year (Stupid)...Let's store the Comics.org stated year just in case.
             pyearit = soup.find("div", {"class": "item_data"})
