@@ -907,7 +907,7 @@ class PostProcessor(object):
                         myDB.upsert("readinglist", newVal, ctrlVal)
 
                         logger.fdebug(module + ' [' + ml['StoryArc'] + '] Post-Processing completed for: ' + grab_dst)
-                if (mylar.NOMATCHSORT == 1):
+                if (mylar.NOMATCHISSUESORT == 1):
                     logger.fdebug('Time to move the non-matches....')
                     for nomatchcomics in nonmatch_list:
                         try:
