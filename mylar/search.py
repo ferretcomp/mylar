@@ -41,7 +41,7 @@ def search_init(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueD
     unaltered_ComicName = None
     if filesafe:
         if filesafe != ComicName and mode != 'want_ann':
-            logger.info('[SEARCH] Special Characters exist within Series Title. Enabling search-safe Name : ' + filesafe)
+            logger.debug('[SEARCH] Special Characters exist within Series Title. Enabling search-safe Name : ' + filesafe)
             if AlternateSearch is None or AlternateSearch == 'None':
                 AlternateSearch = filesafe
             else:
@@ -64,12 +64,12 @@ def search_init(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueD
         issuetitle = helpers.get_issue_title(IssueID)
 
     if issuetitle:
-        logger.info('Issue Title given as : ' + issuetitle)
+        logger.debug('Issue Title given as : ' + issuetitle)
     else:
         logger.fdebug('Issue Title not found. Setting to None.')
 
     if mode == 'want_ann':
-        logger.info("Annual issue search detected. Appending to issue #")
+        logger.debug("Annual issue search detected. Appending to issue #")
         #anything for mode other than None indicates an annual.
         if 'annual' not in ComicName.lower():
             ComicName = ComicName + " annual"
@@ -246,7 +246,7 @@ def search_init(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueD
                         loopit = len(chkthealt)
                         for calt in chkthealt:
                             AS_Alternate = re.sub('##', '', calt)
-                            logger.info(u"Alternate Search pattern detected...re-adjusting to : " + str(AS_Alternate))
+                            logger.debug(u"Alternate Search pattern detected...re-adjusting to : " + str(AS_Alternate))
                             findit = NZB_SEARCH(AS_Alternate, IssueNumber, ComicYear, SeriesYear, Publisher, IssueDate, StoreDate, searchprov, send_prov_count, IssDateFix, IssueID, UseFuzzy, newznab_host, ComicVersion=ComicVersion, SARC=SARC, IssueArcID=IssueArcID, RSS="yes", ComicID=ComicID, issuetitle=issuetitle, unaltered_ComicName=AS_Alternate, allow_packs=allow_packs)
                             if findit['status'] is True:
                                 break
@@ -266,7 +266,7 @@ def search_init(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueD
                         loopit = len(chkthealt)
                         for calt in chkthealt:
                             AS_Alternate = re.sub('##', '', calt)
-                            logger.info(u"Alternate Search pattern detected...re-adjusting to : " + str(AS_Alternate))
+                            logger.debug(u"Alternate Search pattern detected...re-adjusting to : " + str(AS_Alternate))
                             findit = NZB_SEARCH(AS_Alternate, IssueNumber, ComicYear, SeriesYear, Publisher, IssueDate, StoreDate, searchprov, send_prov_count, IssDateFix, IssueID, UseFuzzy, newznab_host, ComicVersion=ComicVersion, SARC=SARC, IssueArcID=IssueArcID, RSS="no", ComicID=ComicID, issuetitle=issuetitle, unaltered_ComicName=unaltered_ComicName, allow_packs=allow_packs)
                             if findit['status'] is True:
                                 break
@@ -294,10 +294,12 @@ def search_init(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueD
         else:
             #if searchprov == '32P':
             #    pass
+            ## Hey ben, this is where you can alter how often it searches for something. 
+            ## have to figure out database statuses though
             if manualsearch is None:
                 logger.info('Finished searching via :' + str(searchmode) + '. Issue not found - status kept as Wanted.')
             else:
-                logger.fdebug('Could not find issue doing a manual search via : ' + str(searchmode))
+                logger.info('Could not find issue doing a manual search via : ' + str(searchmode))
             if searchprov == '32P':
                 if mylar.MODE_32P == 0:
                     return findit, 'None'
@@ -357,7 +359,7 @@ def NZB_SEARCH(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueDa
             tmpprov = name_newznab + ' (' + nzbprov + ')'
         else:
             tmpprov = nzbprov
-    logger.info(u"Shhh be very quiet...I'm looking for " + ComicName + " issue: " + IssueNumber + " (" + str(ComicYear) + ") using " + str(tmpprov))
+    logger.debug(u"Shhh be very quiet...I'm looking for " + ComicName + " issue: " + IssueNumber + " (" + str(ComicYear) + ") using " + str(tmpprov))
 
 
     #this will completely render the api search results empty. Needs to get fixed.
@@ -608,7 +610,7 @@ def NZB_SEARCH(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueDa
                         elif str(mylar.SEARCH_DELAY).isdigit():
                             pause_the_search = int(mylar.SEARCH_DELAY)
                         else:
-                            logger.info("Check Search Delay - invalid numerical given. Force-setting to 15 Seconds")
+                            logger.warn("Check Search Delay - invalid numerical given. Force-setting to 15 Seconds")
                             pause_the_search = 15
 
                         #bypass for local newznabs
@@ -627,7 +629,7 @@ def NZB_SEARCH(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueDa
                                 localbypass = True
 
                         if localbypass == False:
-                            logger.info("pausing for " + str(pause_the_search) + " seconds before continuing to avoid hammering")
+                            logger.debug("pausing for " + str(pause_the_search) + " seconds before continuing to avoid hammering")
                             time.sleep(pause_the_search)
 
                         # Add a user-agent
@@ -693,7 +695,7 @@ def NZB_SEARCH(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueDa
                                     done = True
                                 break
                         except:
-                            logger.info('no errors on data retrieval...proceeding')
+                            logger.debug('no errors on data retrieval...proceeding')
                             pass
                 elif nzbprov == 'experimental':
                     #bb = parseit.MysterBinScrape(comsearch[findloop], comyear)
@@ -1251,9 +1253,9 @@ def NZB_SEARCH(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueDa
                             #find the pack range.
                             pack_issuelist = entry['issues']
                             issueid_info = helpers.issue_find_ids(ComicName, ComicID, pack_issuelist, IssueNumber)
-                            logger.info('issueid_info:' + str(issueid_info))
+                            logger.debug('issueid_info:' + str(issueid_info))
                             if issueid_info['valid'] == True:
-                                logger.info('Issue Number ' + IssueNumber + ' exists within pack. Continuing.')
+                                logger.debug('Issue Number ' + IssueNumber + ' exists within pack. Continuing.')
                             else:
                                 logger.fdebug('Issue Number ' + IssueNumber + ' does NOT exist within this pack. Skipping')
                                 continue
@@ -1629,7 +1631,7 @@ def NZB_SEARCH(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueDa
                         break
             cmloopit-=1
             if cmloopit < 1 and c_alpha is not None and seperatealpha == "no" and foundc['status'] is False:
-                logger.info("Alphanumerics detected within IssueNumber. Seperating from Issue # and re-trying.")
+                logger.debug("Alphanumerics detected within IssueNumber. Seperating from Issue # and re-trying.")
                 cmloopit = origcmloopit
                 seperatealpha = "yes"
 
@@ -1681,9 +1683,9 @@ def searchforissue(issueid=None, new=False, rsscheck=None):
     if not issueid or rsscheck:
 
         if rsscheck:
-            logger.info(u"Initiating RSS Search Scan at the scheduled interval of " + str(mylar.RSS_CHECKINTERVAL) + " minutes.")
+            logger.debug(u"Initiating RSS Search Scan at the scheduled interval of " + str(mylar.RSS_CHECKINTERVAL) + " minutes.")
         else:
-            logger.info(u"Initiating Search scan at the scheduled interval of " + str(mylar.SEARCH_INTERVAL) + " minutes.")
+            logger.debug(u"Initiating Search scan at the scheduled interval of " + str(mylar.SEARCH_INTERVAL) + " minutes.")
 
         myDB = db.DBConnection()
 
@@ -1769,9 +1771,9 @@ def searchforissue(issueid=None, new=False, rsscheck=None):
                         updater.foundsearch(result['ComicID'], result['IssueID'], mode=mode, provider=prov, hash=foundNZB['info']['t_hash'])
 
         if rsscheck:
-            logger.info('Completed RSS Search scan')
+            logger.debug('Completed RSS Search scan')
         else:
-            logger.info('Completed API Search scan')
+            logger.debug('Completed API Search scan')
 
 
     else:
@@ -2159,7 +2161,7 @@ def searcher(nzbprov, nzbname, comicinfo, link, IssueID, ComicID, tmpprov, direc
                 alt_nzbname = re.sub('.nzb', '', filen).strip()
                 alt_nzbname = re.sub('[\s+]', ' ', alt_nzbname)
                 alt_nzbname = re.sub('[\s\_]', '.', alt_nzbname)
-                logger.info('filen: ' + filen + ' -- nzbname: ' + nzbname + ' are not identical. Storing extra value as : ' + alt_nzbname)
+                logger.debug('filen: ' + filen + ' -- nzbname: ' + nzbname + ' are not identical. Storing extra value as : ' + alt_nzbname)
 
             #make sure the cache directory exists - if not, create it (used for storing nzbs).
             if os.path.exists(mylar.CACHE_DIR):
@@ -2174,7 +2176,7 @@ def searcher(nzbprov, nzbname, comicinfo, link, IssueID, ComicID, tmpprov, direc
                 logger.fdebug("Could not locate Cache Directory, attempting to create at : " + mylar.CACHE_DIR)
                 try:
                     filechecker.validateAndCreateDirectory(mylar.CACHE_DIR, True)
-                    logger.info("Temporary NZB Download Directory successfully created at: " + mylar.CACHE_DIR)
+                    logger.debug("Temporary NZB Download Directory successfully created at: " + mylar.CACHE_DIR)
                 except OSError:
                     raise
 
@@ -2352,7 +2354,7 @@ def searcher(nzbprov, nzbname, comicinfo, link, IssueID, ComicID, tmpprov, direc
             if send_to_nzbget is True:
                 logger.info("Successfully sent nzb to NZBGet!")
             else:
-                logger.info("Unable to send nzb to NZBGet - check your configs.")
+                logger.warn("Unable to send nzb to NZBGet - check your configs.")
                 return "nzbget-fail"
         #end nzb.get
 

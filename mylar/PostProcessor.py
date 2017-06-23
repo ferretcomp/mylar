@@ -591,7 +591,8 @@ class PostProcessor(object):
                                                             "IssueNumber":     issuechk['Issue_Number'],
                                                             "ComicName":       cs['ComicName']})
                                     else:
-                                        logger.fdebug(module + '[NON-MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
+                                        clocation = os.path.join(watchmatch['comiclocation'],helpers.conversion(watchmatch['comicfilename']))
+                                        logger.info(module + '[NON-MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
                                         nonmatch_list.append({"ComicLocation":   clocation,
                                                             "ComicID":         cs['ComicID'],
                                                             "IssueID":         issuechk['IssueID'],
@@ -599,7 +600,8 @@ class PostProcessor(object):
                                                             "ComicName":       cs['ComicName']})
                                         continue
                                 else:
-                                    logger.fdebug(module + '[NON-MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
+                                    clocation = os.path.join(watchmatch['comiclocation'],helpers.conversion(watchmatch['comicfilename']))
+                                    logger.info(module + '[NON-MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
                                     nonmatch_list.append({"ComicLocation":   clocation,
                                                             "ComicID":         cs['ComicID'],
                                                             "IssueID":         issuechk['IssueID'],
@@ -607,7 +609,7 @@ class PostProcessor(object):
                                                             "ComicName":       cs['ComicName']})
                                     continue
 
-                        logger.fdebug(module + '[SUCCESSFUL MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Match verified for ' + helpers.conversion(fl['comicfilename']))
+                        logger.info(module + '[SUCCESSFUL MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Match verified for ' + helpers.conversion(fl['comicfilename']))
                         break
 
 
