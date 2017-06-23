@@ -278,7 +278,7 @@ def search_init(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueD
 
             if searchprov == 'newznab':
                 searchprov = newznab_host[0].rstrip()
-            logger.info('Could not find Issue ' + IssueNumber + ' of ' + ComicName + ' (' + str(SeriesYear) + ') using ' + str(searchprov) + ' [' + str(searchmode) + ']')
+            logger.debug('Could not find Issue ' + IssueNumber + ' of ' + ComicName + ' (' + str(SeriesYear) + ') using ' + str(searchprov) + ' [' + str(searchmode) + ']')
             prov_count+=1
             #torprtmp+=1  #torprtmp-=1
 
@@ -297,9 +297,9 @@ def search_init(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueD
             ## Hey ben, this is where you can alter how often it searches for something. 
             ## have to figure out database statuses though
             if manualsearch is None:
-                logger.info('Finished searching via :' + str(searchmode) + '. Issue not found - status kept as Wanted.')
+                logger.debug('Finished searching via :' + str(searchmode) + '. Issue not found - status kept as Wanted.')
             else:
-                logger.info('Could not find issue doing a manual search via : ' + str(searchmode))
+                logger.debug('Could not find issue doing a manual search via : ' + str(searchmode))
             if searchprov == '32P':
                 if mylar.MODE_32P == 0:
                     return findit, 'None'
@@ -1767,7 +1767,7 @@ def searchforissue(issueid=None, new=False, rsscheck=None):
             if (mylar.NZBSU or mylar.DOGNZB or mylar.EXPERIMENTAL or mylar.NEWZNAB or mylar.ENABLE_TPSE or mylar.ENABLE_32P or mylar.ENABLE_TORZNAB) and (mylar.USE_SABNZBD or mylar.USE_NZBGET or mylar.ENABLE_TORRENTS or mylar.USE_BLACKHOLE):
                     foundNZB, prov = search_init(comic['ComicName'], result['Issue_Number'], str(ComicYear), comic['ComicYear'], Publisher, IssueDate, StoreDate, result['IssueID'], AlternateSearch, UseFuzzy, ComicVersion, SARC=None, IssueArcID=None, mode=mode, rsscheck=rsscheck, ComicID=result['ComicID'], filesafe=comic['ComicName_Filesafe'], allow_packs=AllowPacks)
                     if foundNZB['status'] is True:
-                        logger.info(foundNZB)
+                        logger.debug(foundNZB)
                         updater.foundsearch(result['ComicID'], result['IssueID'], mode=mode, provider=prov, hash=foundNZB['info']['t_hash'])
 
         if rsscheck:
@@ -2095,9 +2095,9 @@ def searcher(nzbprov, nzbname, comicinfo, link, IssueID, ComicID, tmpprov, direc
             verify = False
 
         if payload is None:
-            logger.info('Download URL: ' + str(down_url) + ' [VerifySSL:' + str(verify) + ']')
+            logger.debug('Download URL: ' + str(down_url) + ' [VerifySSL:' + str(verify) + ']')
         else:
-            logger.info('Download URL: ' + down_url + '?' + urllib.urlencode(payload) + ' [VerifySSL:' + str(verify) + ']')
+            logger.debug('Download URL: ' + down_url + '?' + urllib.urlencode(payload) + ' [VerifySSL:' + str(verify) + ']')
 
         if down_url.startswith('https') and verify == False:
             try:
