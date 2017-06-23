@@ -914,17 +914,22 @@ class PostProcessor(object):
                 if (mylar.NOMATCHISSUESORT == 1):
                     if (mylar.NOMATCHISSUESORT_LOCATION != 'None'):
                         checkdirectory = filechecker.validateAndCreateDirectory(mylar.NOMATCHISSUESORT_LOCATION, True, module='[NO MATCH MOVE]')
-                        logger.fdebug('Time to move the non-matches....')
-                        for nomatchcomics in nonmatch_list:
-                            try:
-                                os.rename(nonmatch_list['comiclocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nonmatch_list['comicname']))
+                        logger.info('Time to move the non-matches....')
+                        if (len(nonmatch_list) > 0):
+                            for nomatchcomics in nonmatch_list:
+                                try:
+                                    logger.info('Attempting to move ' + nomatchcomics['comiclocation'] + ' to ' + os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
+                                    os.rename(nomatchcomics['comiclocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
                                 
-                            except Exception as movee:
-                                logger.warn('moving the no match file failed. error was: ' + movee)
-                            else:
-                                logger.info('Issue '+ nonmatch_list['comicname'] + ' sucessfuilly moved to: '+mylar.NOMATCHISSUESORT_LOCATION)
+                                except Exception as movee:
+                                    logger.warn('moving the no match file failed. error was: ' + movee)
+                                else:
+                                    logger.info('Issue '+ nomatchcomics['comicname'] + ' sucessfuilly moved to: '+mylar.NOMATCHISSUESORT_LOCATION)
+                        else:
+                            logger.info('Lenght of nonmatch_list was less than zero...')
                     else:
-                        logger.warn('NO directory set in options, please set first. ')
+                        logger.warn('Option to move files is enabled, but no directory is set. Fix that first.')
+                    
             else:
                 nzbname = self.nzb_name
                 #remove extensions from nzb_name if they somehow got through (Experimental most likely)
