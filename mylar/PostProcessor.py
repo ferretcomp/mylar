@@ -184,8 +184,8 @@ class PostProcessor(object):
                 try:
                     shutil.move(path_to_move, os.path.join(mylar.DUPLICATE_DUMP, file_to_move))
                 except (OSError, IOError):
-                    logger.warn('[DUPLICATE-CLEANUP] Failed to move ' + path_to_move + ' ... to ... ' + os.path.join(mylar.DUPLICATE_DUMP, file_to_move) + ' - so check that out. ')
-                    #os.remove(path_to_move)
+                    logger.warn('[DUPLICATE-CLEANUP] Failed to move ' + path_to_move + ' ... to ... ' + os.path.join(mylar.DUPLICATE_DUMP, file_to_move) + ' - so deleted the file ')
+                    os.remove(path_to_move)
                     return True
 
                 logger.warn('[DUPLICATE-CLEANUP] Successfully moved ' + path_to_move + ' ... to ... ' + os.path.join(mylar.DUPLICATE_DUMP, file_to_move))
@@ -910,15 +910,19 @@ class PostProcessor(object):
 
                         logger.fdebug(module + ' [' + ml['StoryArc'] + '] Post-Processing completed for: ' + grab_dst)
                 if (mylar.NOMATCHISSUESORT == 1):
-                    logger.fdebug('Time to move the non-matches....')
-                    for nomatchcomics in nonmatch_list:
-                        try:
-                            os.rename(nonmatch_list['comiclocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nonmatch_list['comicname']))
-                            logger.fdebug('placehodler so this won\'t bitch')
-                        except Exception:
-                            logger.fdebug('placehodler so this won\'t bitch')
-                        else:
-                            logger.info('Issue moved to nonmatch path')
+                    if (mylar.NOMATCHIUSSUESORT_LOCATION != None):
+                        checkdirectory = filechecker.validateAndCreateDirectory(mylar.NOMATCHIUSSUESORT_LOCATION, True, module='[NO MATCH MOVE]')
+                        logger.fdebug('Time to move the non-matches....')
+                        for nomatchcomics in nonmatch_list:
+                            try:
+                                os.rename(nonmatch_list['comiclocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nonmatch_list['comicname']))
+                                
+                            except Exception as movee:
+                                logger.warn('moving the no match file failed. error was: ' + movee)
+                            else:
+                                logger.info('Issue '+ nonmatch_list['comicname'] + ' sucessfuilly moved to: '+mylar.NOMATCHISSUESORT_LOCATION)
+                    else:
+                        logger.warn('NO directory set in options, please set first. ')
             else:
                 nzbname = self.nzb_name
                 #remove extensions from nzb_name if they somehow got through (Experimental most likely)
