@@ -387,7 +387,9 @@ class PostProcessor(object):
                                 #duplicate_process()
                                 try:
                                     os.remove(os.path.join(fl['comiclocation'], fl['comicfilename'].decode(mylar.SYS_ENCODING)))
-                                except Exception:
+                                    logger.warn(fl['comicfilename'] + ' has just beenn deleted. Just a heads up.')
+                                except Exception as deleteerror:
+                                    logger.error('Attempted to delete ' + fl['comicfilename'] + ' and it failed hard: ' + deleteerror)
                                     pass
                                 continue
                             wv_comicname = wv['ComicName']
