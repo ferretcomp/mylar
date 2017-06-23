@@ -625,7 +625,7 @@ def initialize():
         BADISSUESORT = bool(check_setting_int(CFG, 'General', 'badissuesort', 0))
         BADISSUESORT_LOCATION = check_setting_str(CFG, 'General', 'badissuesort_location', '')
         NOMATCHISSUESORT = bool(check_setting_int(CFG, 'General', 'nomatchissuesort', 0))
-        NOMATCHDISSUESORT_LOCATION = check_setting_str(CFG, 'General', 'nomatchissuesort_location', '')
+        NOMATCHISSUESORT_LOCATION = check_setting_str(CFG, 'General', 'nomatchissuesort_location', '')
         PULL_REFRESH = check_setting_str(CFG, 'General', 'pull_refresh', '')
         AUTOWANT_ALL = bool(check_setting_int(CFG, 'General', 'autowant_all', 0))
         AUTOWANT_UPCOMING = bool(check_setting_int(CFG, 'General', 'autowant_upcoming', 1))
