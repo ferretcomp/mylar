@@ -929,25 +929,7 @@ class PostProcessor(object):
                         myDB.upsert("readinglist", newVal, ctrlVal)
 
                         logger.fdebug(module + ' [' + ml['StoryArc'] + '] Post-Processing completed for: ' + grab_dst)
-                if (mylar.NOMATCHISSUESORT == 1):
-                    if (mylar.NOMATCHISSUESORT_LOCATION != 'None'):
-                        checkdirectory = filechecker.validateAndCreateDirectory(mylar.NOMATCHISSUESORT_LOCATION, True, module='[NO MATCH MOVE]')
-                        logger.info('Time to move the non-matches....')
-                        if (len(nonmatch_list) > 0):
-                            for nomatchcomics in nonmatch_list:
-                                try:
-                                    logger.info('Attempting to move ' + nomatchcomics['comiclocation'] + ' to ' + os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
-                                    os.rename(nomatchcomics['comiclocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
-                                
-                                except Exception as movee:
-                                    logger.warn('moving the no match file failed. error was: ' + movee)
-                                else:
-                                    logger.info('Issue '+ nomatchcomics['comicname'] + ' sucessfuilly moved to: '+mylar.NOMATCHISSUESORT_LOCATION)
-                        else:
-                            logger.info('Lenght of nonmatch_list was less than zero...')
-                    else:
-                        logger.warn('Option to move files is enabled, but no directory is set. Fix that first. ')
-                    
+                
             else:
                 nzbname = self.nzb_name
                 #remove extensions from nzb_name if they somehow got through (Experimental most likely)
@@ -1237,6 +1219,25 @@ class PostProcessor(object):
 
             if self.nzb_name == 'Manual Run':
                 #loop through the hits here.
+                if (mylar.NOMATCHISSUESORT == 1):
+                    if (mylar.NOMATCHISSUESORT_LOCATION != 'None'):
+                        checkdirectory = filechecker.validateAndCreateDirectory(mylar.NOMATCHISSUESORT_LOCATION, True, module='[NO MATCH MOVE]')
+                        logger.info('Time to move the non-matches....')
+                        if (len(nonmatch_list) > 0):
+                            for nomatchcomics in nonmatch_list:
+                                try:
+                                    logger.info('Attempting to move ' + nomatchcomics['comiclocation'] + ' to ' + os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
+                                    os.rename(nomatchcomics['comiclocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
+                                
+                                except Exception as movee:
+                                    logger.warn('moving the no match file failed. error was: ' + movee)
+                                else:
+                                    logger.info('Issue '+ nomatchcomics['comicname'] + ' sucessfuilly moved to: '+mylar.NOMATCHISSUESORT_LOCATION)
+                        else:
+                            logger.info('Lenght of nonmatch_list was less than zero...')
+                    else:
+                        logger.warn('Option to move files is enabled, but no directory is set. Fix that first. ')
+                    
                 if len(manual_list) == 0 and len(manual_arclist) == 0:
                     logger.info(module + ' No matches for Manual Run ... exiting.')
                     return
