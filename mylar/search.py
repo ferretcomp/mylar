@@ -161,7 +161,7 @@ def search_init(ComicName, IssueNumber, ComicYear, SeriesYear, Publisher, IssueD
 
     prov_order, newznab_info = provider_sequence(nzbprovider, torprovider, newznab_hosts)
     # end provider order sequencing
-    logger.info('search provider order is ' + str(prov_order))
+    logger.debug('search provider order is ' + str(prov_order))
 
     #fix for issue dates between Nov-Dec/(Jan-Feb-Mar)
     IssDt = str(IssueDate)[5:7]
@@ -2006,7 +2006,7 @@ def searcher(nzbprov, nzbname, comicinfo, link, IssueID, ComicID, tmpprov, direc
         tmpprov = re.sub('TPSE', nzbprov, tmpprov)
 
     if comicinfo[0]['pack'] == True:
-        logger.info(u"Found " + ComicName + " (" + str(comyear) + ") issue: " + str(IssueNumber) + " using " + str(tmpprov) + " within a pack containing issues: " + comicinfo[0]['pack_numbers'])
+        logger.debug(u"Found " + ComicName + " (" + str(comyear) + ") issue: " + str(IssueNumber) + " using " + str(tmpprov) + " within a pack containing issues: " + comicinfo[0]['pack_numbers'])
     else:
         if IssueID is None:
             #one-off information
@@ -2352,7 +2352,7 @@ def searcher(nzbprov, nzbname, comicinfo, link, IssueID, ComicID, tmpprov, direc
             send_to_nzbget = server.append(nzbpath, str(mylar.NZBGET_CATEGORY), int(nzbgetpriority), True, nzbcontent64)
             sent_to = "NZBGet"
             if send_to_nzbget is True:
-                logger.info("Successfully sent nzb to NZBGet!")
+                logger.debug("Successfully sent nzb to NZBGet!")
             else:
                 logger.warn("Unable to send nzb to NZBGet - check your configs.")
                 return "nzbget-fail"

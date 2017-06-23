@@ -345,7 +345,13 @@ class PostProcessor(object):
                         tcrc = helpers.crc(os.path.join(fl['comiclocation'], fl['comicfilename'].decode(mylar.SYS_ENCODING)))
                         crcchk = [x for x in pp_crclist if tcrc == x['crc']]
                         if crcchk:
-                           logger.fdebug('Already post-processed this item %s - Ignoring' % crcchk)
+                           logger.fdebug('Already post-processed this item %s - Ignoring and moving to no match' % crcchk)
+                           clocation = os.path.join(arcmatch['comiclocation'], tmpfilename)
+                           nonmatch_list.append({"ComicLocation":   clocation,
+                                                            "ComicID":         cs['ComicID'],
+                                                            "IssueID":         issuechk['IssueID'],
+                                                            "IssueNumber":     issuechk['Issue_Number'],
+                                                            "ComicName":       cs['ComicName']})
                            continue
 
                     as_d = filechecker.FileChecker()
@@ -371,7 +377,13 @@ class PostProcessor(object):
                     comicseries = myDB.select(tmpsql, tuple(loopchk))
 
                     if comicseries is None:
-                        logger.error(module + ' No Series in Watchlist - checking against Story Arcs (just in case). If I do not find anything, maybe you should be running Import?')
+                        logger.error(module + ' No Series in Watchlist - checking against Story Arcs (just in case). If I do not find anything, maybe you should be running Import? Will move to no match directory.')
+                        clocation = os.path.join(arcmatch['comiclocation'], tmpfilename)
+                        nonmatch_list.append({"ComicLocation":   clocation,
+                                                            "ComicID":         cs['ComicID'],
+                                                            "IssueID":         issuechk['IssueID'],
+                                                            "IssueNumber":     issuechk['Issue_Number'],
+                                                            "ComicName":       cs['ComicName']})
                         break
                     else:
                         watchvals = []
@@ -792,7 +804,13 @@ class PostProcessor(object):
                                                     logger.fdebug(module + '[SUCCESSFUL MATCH: ' + k + '-' + v[i]['WatchValues']['ComicID'] + '] Match verified for ' + arcmatch['comicfilename'])
                                                     break
                                             else:
-                                                logger.fdebug(module + '[NON-MATCH: ' + k + '-' + v[i]['WatchValues']['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
+                                                logger.fdebug(module + '[NON-MATCH: ' + k + '-' + v[i]['WatchValues']['ComicID'] + '] Incorrect series - not populating..continuing post-processing - adding to nonmatch_list.')
+                                                clocation = os.path.join(arcmatch['comiclocation'], tmpfilename)
+                                                nonmatch_list.append({"ComicLocation":   clocation,
+                                                            "ComicID":         cs['ComicID'],
+                                                            "IssueID":         issuechk['IssueID'],
+                                                            "IssueNumber":     issuechk['Issue_Number'],
+                                                            "ComicName":       cs['ComicName']})
 
                             i+=1
 
@@ -928,7 +946,7 @@ class PostProcessor(object):
                         else:
                             logger.info('Lenght of nonmatch_list was less than zero...')
                     else:
-                        logger.warn('Option to move files is enabled, but no directory is set. Fix that first.')
+                        logger.warn('Option to move files is enabled, but no directory is set. Fix that first. ')
                     
             else:
                 nzbname = self.nzb_name
