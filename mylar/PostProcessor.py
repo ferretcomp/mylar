@@ -910,8 +910,8 @@ class PostProcessor(object):
 
                         logger.fdebug(module + ' [' + ml['StoryArc'] + '] Post-Processing completed for: ' + grab_dst)
                 if (mylar.NOMATCHISSUESORT == 1):
-                    if (mylar.NOMATCHIUSSUESORT_LOCATION != None):
-                        checkdirectory = filechecker.validateAndCreateDirectory(mylar.NOMATCHIUSSUESORT_LOCATION, True, module='[NO MATCH MOVE]')
+                    if (mylar.NOMATCHISSUESORT_LOCATION != 'None'):
+                        checkdirectory = filechecker.validateAndCreateDirectory(mylar.NOMATCHISSUESORT_LOCATION, True, module='[NO MATCH MOVE]')
                         logger.fdebug('Time to move the non-matches....')
                         for nomatchcomics in nonmatch_list:
                             try:
