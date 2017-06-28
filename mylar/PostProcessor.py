@@ -378,7 +378,7 @@ class PostProcessor(object):
 
                     if comicseries is None:
                         logger.error(module + ' No Series in Watchlist - checking against Story Arcs (just in case). If I do not find anything, maybe you should be running Import? Will move to no match directory.')
-                        clocation = os.path.join(arcmatch['comiclocation'], tmpfilename)
+                        clocation = os.path.join(arcmatch['comiclocation'], arcmatch['comicfilename'])
                         nonmatch_list.append({"ComicLocation":   clocation,
                                                             "ComicID":         cs['ComicID'],
                                                             "IssueID":         issuechk['IssueID'],
