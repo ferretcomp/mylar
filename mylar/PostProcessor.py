@@ -399,7 +399,7 @@ class PostProcessor(object):
                                 #duplicate_process()
                                 try:
                                     os.remove(os.path.join(fl['comiclocation'], fl['comicfilename'].decode(mylar.SYS_ENCODING)))
-                                    logger.warn(fl['comicfilename'] + ' has just beenn deleted. Just a heads up.')
+                                    logger.warn(fl['comicfilename'] + ' has just been deleted. Just a heads up.')
                                 except Exception as deleteerror:
                                     logger.error('Attempted to delete ' + fl['comicfilename'] + ' and it failed hard: ' + str(deleteerror))
                                     pass
@@ -1230,7 +1230,7 @@ class PostProcessor(object):
                                     os.rename(nomatchcomics['comiclocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
                                 
                                 except Exception as movee:
-                                    logger.warn('moving the no match file failed. error was: ' + movee)
+                                    logger.error('moving the no match file failed. error was: ' + str(movee))
                                 else:
                                     logger.info('Issue '+ nomatchcomics['comicname'] + ' sucessfuilly moved to: '+mylar.NOMATCHISSUESORT_LOCATION)
                         else:
