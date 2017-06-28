@@ -401,7 +401,7 @@ class PostProcessor(object):
                                     os.remove(os.path.join(fl['comiclocation'], fl['comicfilename'].decode(mylar.SYS_ENCODING)))
                                     logger.warn(fl['comicfilename'] + ' has just beenn deleted. Just a heads up.')
                                 except Exception as deleteerror:
-                                    logger.error('Attempted to delete ' + fl['comicfilename'] + ' and it failed hard: ' + deleteerror)
+                                    logger.error('Attempted to delete ' + fl['comicfilename'] + ' and it failed hard: ' + str(deleteerror))
                                     pass
                                 continue
                             wv_comicname = wv['ComicName']
