@@ -346,7 +346,7 @@ class PostProcessor(object):
                         crcchk = [x for x in pp_crclist if tcrc == x['crc']]
                         if crcchk:
                            logger.fdebug('Already post-processed this item %s - Ignoring and moving to no match' % crcchk)
-                           clocation = os.path.join(fl['comiclocation'], tmpfilename)
+                           clocation = os.path.join(fl['comiclocation'], fl['comicfilename'].decode(mylar.SYS_ENCODING))
                            nonmatch_list.append({"ComicLocation":   clocation,
                                                             "ComicID":         cs['ComicID'],
                                                             "IssueID":         issuechk['IssueID'],
