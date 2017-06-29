@@ -600,13 +600,13 @@ class PostProcessor(object):
                                         clocation = os.path.join(watchmatch['comiclocation'],helpers.conversion(watchmatch['comicfilename']))
                                         logger.info(module + '[NON-MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
                                         nonmatch_list.append({"ComicLocation":   clocation,
-                                                             "ComicName":       fl['comicfilename']]})
+                                                             "ComicName":       fl['comicfilename']})
                                         continue
                                 else:
                                     clocation = os.path.join(watchmatch['comiclocation'],helpers.conversion(watchmatch['comicfilename']))
                                     logger.info(module + '[NON-MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
                                     nonmatch_list.append({"ComicLocation":   clocation,
-                                                            "ComicName":       fl['comicfilename']]})
+                                                            "ComicName":       fl['comicfilename']})
                                     continue
 
                         logger.info(module + '[SUCCESSFUL MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Match verified for ' + helpers.conversion(fl['comicfilename']))
