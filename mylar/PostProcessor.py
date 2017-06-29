@@ -1210,14 +1210,14 @@ class PostProcessor(object):
                         logger.info('Time to move the non-matches....')
                         if (len(nonmatch_list) > 0):
                             for nomatchcomics in nonmatch_list:
-                                logger.info('Attempting to move ' + nomatchcomics['comiclocation'] + ' to ' + os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
+                                logger.info('Attempting to move ' + nomatchcomics['ComicLocation'] + ' to ' + os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['ComicName']))
                                 try:
-                                    os.rename(nomatchcomics['comiclocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
+                                    os.rename(nomatchcomics['ComicLocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['ComicName']))
                                 
                                 except Exception,movee:
                                     logger.error('moving the no match file failed. error was: ' + str(movee))
                                 else:
-                                    logger.info('Issue '+ nomatchcomics['comicname'] + ' sucessfuilly moved to: '+mylar.NOMATCHISSUESORT_LOCATION)
+                                    logger.info('Issue '+ nomatchcomics['ComicName'] + ' sucessfuilly moved to: '+mylar.NOMATCHISSUESORT_LOCATION)
                         else:
                             logger.info('Lenght of nonmatch_list was less than zero...')
                     else:
