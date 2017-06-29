@@ -348,10 +348,7 @@ class PostProcessor(object):
                            logger.fdebug('Already post-processed this item %s - Ignoring and moving to no match' % crcchk)
                            clocation = os.path.join(fl['comiclocation'], fl['comicfilename'].decode(mylar.SYS_ENCODING))
                            nonmatch_list.append({"ComicLocation":   clocation,
-                                                            "ComicID":         cs['ComicID'],
-                                                            "IssueID":         issuechk['IssueID'],
-                                                            "IssueNumber":     issuechk['Issue_Number'],
-                                                            "ComicName":       cs['ComicName']})
+                                                           "ComicName":       cs['ComicName']})
                            continue
 
                     as_d = filechecker.FileChecker()
@@ -380,9 +377,6 @@ class PostProcessor(object):
                         logger.error(module + ' No Series in Watchlist - checking against Story Arcs (just in case). If I do not find anything, maybe you should be running Import? Will move to no match directory.')
                         clocation = os.path.join(arcmatch['comiclocation'], arcmatch['comicfilename'])
                         nonmatch_list.append({"ComicLocation":   clocation,
-                                                            "ComicID":         cs['ComicID'],
-                                                            "IssueID":         issuechk['IssueID'],
-                                                            "IssueNumber":     issuechk['Issue_Number'],
                                                             "ComicName":       cs['ComicName']})
                         break
                     else:
@@ -606,18 +600,12 @@ class PostProcessor(object):
                                         clocation = os.path.join(watchmatch['comiclocation'],helpers.conversion(watchmatch['comicfilename']))
                                         logger.info(module + '[NON-MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
                                         nonmatch_list.append({"ComicLocation":   clocation,
-                                                            "ComicID":         cs['ComicID'],
-                                                            "IssueID":         issuechk['IssueID'],
-                                                            "IssueNumber":     issuechk['Issue_Number'],
-                                                            "ComicName":       cs['ComicName']})
+                                                             "ComicName":       cs['ComicName']})
                                         continue
                                 else:
                                     clocation = os.path.join(watchmatch['comiclocation'],helpers.conversion(watchmatch['comicfilename']))
                                     logger.info(module + '[NON-MATCH: ' + cs['ComicName'] + '-' + cs['ComicID'] + '] Incorrect series - not populating..continuing post-processing')
                                     nonmatch_list.append({"ComicLocation":   clocation,
-                                                            "ComicID":         cs['ComicID'],
-                                                            "IssueID":         issuechk['IssueID'],
-                                                            "IssueNumber":     issuechk['Issue_Number'],
                                                             "ComicName":       cs['ComicName']})
                                     continue
 
@@ -807,9 +795,6 @@ class PostProcessor(object):
                                                 logger.fdebug(module + '[NON-MATCH: ' + k + '-' + v[i]['WatchValues']['ComicID'] + '] Incorrect series - not populating..continuing post-processing - adding to nonmatch_list.')
                                                 clocation = os.path.join(arcmatch['comiclocation'], tmpfilename)
                                                 nonmatch_list.append({"ComicLocation":   clocation,
-                                                            "ComicID":         cs['ComicID'],
-                                                            "IssueID":         issuechk['IssueID'],
-                                                            "IssueNumber":     issuechk['Issue_Number'],
                                                             "ComicName":       cs['ComicName']})
 
                             i+=1
