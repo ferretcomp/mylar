@@ -1251,10 +1251,10 @@ class PostProcessor(object):
                         except:
                             #file is no longer present in location / can't be accessed.
                             break
-
-                    dupthis = helpers.duplicate_filecheck(ml['ComicLocation'], ComicID=comicid, IssueID=issueid)
-                    if dupthis[0]['action'] == 'dupe_src' or dupthis[0]['action'] == 'dupe_file':
-                        if dontcheckdupe == 0:
+                    if dontcheckdupe == 0:
+                        dupthis = helpers.duplicate_filecheck(ml['ComicLocation'], ComicID=comicid, IssueID=issueid)
+                        if dupthis[0]['action'] == 'dupe_src' or dupthis[0]['action'] == 'dupe_file':
+                        
                             #check if duplicate dump folder is enabled and if so move duplicate file in there for manual intervention.
                           #'dupe_file' - do not write new file as existing file is better quality
                          #'dupe_src' - write new file, as existing file is a lesser quality (dupe)
@@ -1265,12 +1265,13 @@ class PostProcessor(object):
                                 continue
 
 
-                    if dupthis[0]['action'] == "write" or dupthis[0]['action'] == 'dupe_src':
-                        if dontcheckdupe == 0:
+                        if dupthis[0]['action'] == "write" or dupthis[0]['action'] == 'dupe_src':
+                        
                           stat = ' [' + str(i) + '/' + str(len(manual_list)) + ']'
                           self.Process_next(comicid, issueid, issuenumOG, ml, stat)
                           dupthis = None
-                        
+                    else:
+                        logger.info('Dupe check skipped for files')
                 logger.info(module + ' Manual post-processing completed for ' + str(i) + ' issues.')
                 return
             
