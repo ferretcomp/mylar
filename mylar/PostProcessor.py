@@ -394,7 +394,7 @@ class PostProcessor(object):
                                 try:
                                     os.remove(os.path.join(fl['comiclocation'], fl['comicfilename'].decode(mylar.SYS_ENCODING)))
                                     logger.warn(fl['comicfilename'] + ' has just been deleted. Just a heads up.')
-                                except Exception as deleteerror:
+                                except Exception,deleteerror:
                                     logger.error('Attempted to delete ' + fl['comicfilename'] + ' and it failed hard: ' + str(deleteerror))
                                     pass
                                 continue
@@ -1210,11 +1210,11 @@ class PostProcessor(object):
                         logger.info('Time to move the non-matches....')
                         if (len(nonmatch_list) > 0):
                             for nomatchcomics in nonmatch_list:
+                                logger.info('Attempting to move ' + nomatchcomics['comiclocation'] + ' to ' + os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
                                 try:
-                                    logger.info('Attempting to move ' + nomatchcomics['comiclocation'] + ' to ' + os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
                                     os.rename(nomatchcomics['comiclocation'],os.path.join(mylar.NOMATCHISSUESORT_LOCATION,nomatchcomics['comicname']))
                                 
-                                except Exception as movee:
+                                except Exception,movee:
                                     logger.error('moving the no match file failed. error was: ' + str(movee))
                                 else:
                                     logger.info('Issue '+ nomatchcomics['comicname'] + ' sucessfuilly moved to: '+mylar.NOMATCHISSUESORT_LOCATION)
