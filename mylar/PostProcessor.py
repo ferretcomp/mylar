@@ -349,7 +349,7 @@ class PostProcessor(object):
                            logger.fdebug('Already post-processed this item %s - Ignoring and moving to no match' % crcchk)
                            clocation = os.path.join(fl['comiclocation'], fl['comicfilename'].decode(mylar.SYS_ENCODING))
                            nonmatch_list.append({"ComicLocation":   clocation,
-                                                           "ComicName":       fl['ComicName']})
+                                                           "ComicName":       fl['comicfilename']})
                            continue
 
                     as_d = filechecker.FileChecker()
