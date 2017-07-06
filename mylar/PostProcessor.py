@@ -186,6 +186,7 @@ class PostProcessor(object):
                 except (OSError, IOError):
                     logger.warn('[DUPLICATE-CLEANUP] Failed to move ' + path_to_move + ' ... to ... ' + os.path.join(mylar.DUPLICATE_DUMP, file_to_move) + ' - so deleted the file ')
                     os.remove(path_to_move)
+                    dontcheckdupe=1
                     return True
 
                 logger.warn('[DUPLICATE-CLEANUP] Successfully moved ' + path_to_move + ' ... to ... ' + os.path.join(mylar.DUPLICATE_DUMP, file_to_move))
