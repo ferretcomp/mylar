@@ -1987,6 +1987,7 @@ def duplicate_filecheck(filename, ComicID=None, IssueID=None, StoryArcID=None):
     #
     import db, logger
     myDB = db.DBConnection()
+    rtnval = []
     if os.path.isfile(filename):
         logger.info('[DUPECHECK] Duplicate check for ' + filename)
     
@@ -2007,7 +2008,7 @@ def duplicate_filecheck(filename, ComicID=None, IssueID=None, StoryArcID=None):
     #'write' - write new file
     #'dupe_file' - do not write new file as existing file is better quality
     #'dupe_src' - write new file, as existing file is a lesser quality (dupe)
-    rtnval = []
+    
     if dupchk['Status'] == 'Downloaded' or dupchk['Status'] == 'Archived':
         try:
             dupsize = dupchk['ComicSize']
@@ -2113,7 +2114,7 @@ def duplicate_filecheck(filename, ComicID=None, IssueID=None, StoryArcID=None):
               rtnval.append({'action':  "write"})
               return rtnval
     else:
-            rtnval = "all good, file doesn't exist"
+            rtnval.append({'action':  "dont_dupe"})
     return rtnval                
 def create_https_certificates(ssl_cert, ssl_key):
     """
