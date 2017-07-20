@@ -2001,19 +2001,19 @@ def duplicate_filecheck(filename, ComicID=None, IssueID=None, StoryArcID=None):
             logger.info('[DUPECHECK] Unable to find corresponding Issue within the DB. Do you still have the series on your watchlist?')
             return
 
-    series = myDB.selectone("SELECT * FROM comics WHERE ComicID=?", [dupchk['ComicID']]).fetchone()
+        series = myDB.selectone("SELECT * FROM comics WHERE ComicID=?", [dupchk['ComicID']]).fetchone()
 
-    #if it's a retry and the file was already snatched, the status is Snatched and won't hit the dupecheck.
-    #rtnval will be one of 3: 
-    #'write' - write new file
-    #'dupe_file' - do not write new file as existing file is better quality
-    #'dupe_src' - write new file, as existing file is a lesser quality (dupe)
+        #if it's a retry and the file was already snatched, the status is Snatched and won't hit the dupecheck.
+        #rtnval will be one of 3: 
+        #'write' - write new file
+        #'dupe_file' - do not write new file as existing file is better quality
+        #'dupe_src' - write new file, as existing file is a lesser quality (dupe)
     
-    if dupchk['Status'] == 'Downloaded' or dupchk['Status'] == 'Archived':
-        try:
-            dupsize = dupchk['ComicSize']
-        except:
-            logger.info('[DUPECHECK] Duplication detection returned no hits as this is a new Snatch. This is not a duplicate.')
+        if dupchk['Status'] == 'Downloaded' or dupchk['Status'] == 'Archived':
+            try:
+                dupsize = dupchk['ComicSize']
+            except:
+                logger.info('[DUPECHECK] Duplication detection returned no hits as this is a new Snatch. This is not a duplicate.')
             rtnval.append({'action':  "write"})
 
         logger.info('[DUPECHECK] Existing Status already set to ' + dupchk['Status'])
