@@ -1987,14 +1987,15 @@ def duplicate_filecheck(filename, ComicID=None, IssueID=None, StoryArcID=None):
     #
     import db, logger
     myDB = db.DBConnection()
+    if os.path.isfile(filename):
+        logger.info('[DUPECHECK] Duplicate check for ' + filename)
+    
+        filesz = os.path.getsize(filename)
 
-    logger.info('[DUPECHECK] Duplicate check for ' + filename)
-    filesz = os.path.getsize(filename)
-
-    if IssueID:
-        dupchk = myDB.selectone("SELECT * FROM issues WHERE IssueID=?", [IssueID]).fetchone()
-    if dupchk is None:
-        dupchk = myDB.selectone("SELECT * FROM annuals WHERE IssueID=?", [IssueID]).fetchone()
+        if IssueID:
+            dupchk = myDB.selectone("SELECT * FROM issues WHERE IssueID=?", [IssueID]).fetchone()
+        if dupchk is None:
+            dupchk = myDB.selectone("SELECT * FROM annuals WHERE IssueID=?", [IssueID]).fetchone()
         if dupchk is None:
             logger.info('[DUPECHECK] Unable to find corresponding Issue within the DB. Do you still have the series on your watchlist?')
             return
@@ -2107,11 +2108,13 @@ def duplicate_filecheck(filename, ComicID=None, IssueID=None, StoryArcID=None):
                     rtnval.append({'action':  "dupe_src",
                                    'to_dupe': os.path.join(series['ComicLocation'], dupchk['Location'])})
 
+            else:
+              logger.info('[DUPECHECK] Duplication detection returned no hits. This is not a duplicate of anything that I have scanned in as of yet.')
+              rtnval.append({'action':  "write"})
+              return rtnval
     else:
-        logger.info('[DUPECHECK] Duplication detection returned no hits. This is not a duplicate of anything that I have scanned in as of yet.')
-        rtnval.append({'action':  "write"})
-    return rtnval
-
+            rtnval = "all good, file doesn't exist"
+    return rtnval                
 def create_https_certificates(ssl_cert, ssl_key):
     """
     Create a pair of self-signed HTTPS certificares and store in them in
