@@ -2008,14 +2008,15 @@ def duplicate_filecheck(filename, ComicID=None, IssueID=None, StoryArcID=None):
         #'write' - write new file
         #'dupe_file' - do not write new file as existing file is better quality
         #'dupe_src' - write new file, as existing file is a lesser quality (dupe)
-    
+        
         if dupchk['Status'] == 'Downloaded' or dupchk['Status'] == 'Archived':
             try:
                 dupsize = dupchk['ComicSize']
             except:
                 logger.info('[DUPECHECK] Duplication detection returned no hits as this is a new Snatch. This is not a duplicate.')
-            rtnval.append({'action':  "write"})
-
+                rtnval.append({'action':  "write"})
+                dupsize = None
+                
         logger.info('[DUPECHECK] Existing Status already set to ' + dupchk['Status'])
         cid = []
         if dupsize is None:
