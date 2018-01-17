@@ -1985,131 +1985,131 @@ def duplicate_filecheck(filename, ComicID=None, IssueID=None, StoryArcID=None):
     #issueid = the issueid of the issue that's being checked for duplication
     #storyarcid = the storyarcid of the issue that's being checked for duplication.
     #
-    import db, logger
-    myDB = db.DBConnection()
-
-    logger.info('[DUPECHECK] Duplicate check for ' + filename)
-    filesz = os.path.getsize(filename)
-
-    if IssueID:
-        dupchk = myDB.selectone("SELECT * FROM issues WHERE IssueID=?", [IssueID]).fetchone()
-    if dupchk is None:
-        dupchk = myDB.selectone("SELECT * FROM annuals WHERE IssueID=?", [IssueID]).fetchone()
-        if dupchk is None:
-            logger.info('[DUPECHECK] Unable to find corresponding Issue within the DB. Do you still have the series on your watchlist?')
-            return
-
-    series = myDB.selectone("SELECT * FROM comics WHERE ComicID=?", [dupchk['ComicID']]).fetchone()
-
-    #if it's a retry and the file was already snatched, the status is Snatched and won't hit the dupecheck.
-    #rtnval will be one of 3: 
-    #'write' - write new file
-    #'dupe_file' - do not write new file as existing file is better quality
-    #'dupe_src' - write new file, as existing file is a lesser quality (dupe)
-
-    if dupchk['Status'] == 'Downloaded' or dupchk['Status'] == 'Archived':
-        try:
-            dupsize = dupchk['ComicSize']
-        except:
-            logger.info('[DUPECHECK] Duplication detection returned no hits as this is a new Snatch. This is not a duplicate.')
-            rtnval = {'action':  "write"}
-
-        logger.info('[DUPECHECK] Existing Status already set to ' + dupchk['Status'])
-        cid = []
-        if dupsize is None:
-            logger.info('[DUPECHECK] Existing filesize is 0 bytes as I cannot locate the orginal entry - it is probably archived.')
-            logger.fdebug('[DUPECHECK] Checking series for unrefreshed series syndrome (USS).')
-            havechk = myDB.selectone('SELECT * FROM comics WHERE ComicID=?', [ComicID]).fetchone()
-            if havechk:
-                if havechk['Have'] > havechk['Total']:
-                    logger.info('[DUPECHECK] Series has invalid issue totals [' + str(havechk['Have']) + '/' + str(havechk['Total']) + '] Attempting to Refresh & continue post-processing this issue.')
-                    cid.append(ComicID)
-                    logger.fdebug('[DUPECHECK] ComicID: ' + str(ComicID))
-                    mylar.updater.dbUpdate(ComicIDList=cid, calledfrom='dupechk')
-                    return duplicate_filecheck(filename, ComicID, IssueID, StoryArcID)
-                else:
-                    #file is Archived, but no entry exists in the db for the location. Assume Archived, and don't post-process.
-                    logger.fdebug('[DUPECHECK] File is Archived but no file can be located within the db at the specified location. Assuming this was a manual archival and will not post-process this issue.')
-                    rtnval = {'action':  "dont_dupe"}
-
-            else:
-                rtnval = {'action':  "dupe_file",
-                          'to_dupe': os.path.join(series['ComicLocation'], dupchk['Location'])}
-        else:
-            logger.info('[DUPECHECK] Existing file within db :' + dupchk['Location'] + ' has a filesize of : ' + str(dupsize) + ' bytes.')
-
-            #keywords to force keep / delete
-            #this will be eventually user-controlled via the GUI once the options are enabled.
-
-            if int(dupsize) == 0:
-                logger.info('[DUPECHECK] Existing filesize is 0 as I cannot locate the original entry.')
-                if dupchk['Status'] == 'Archived':
-                    logger.info('[DUPECHECK] Assuming issue is Archived.')
-                    rtnval = {'action':  "dupe_file",
-                              'to_dupe': filename}
-                    return rtnval
-                else:
-                    logger.info('[DUPECHECK] Assuming 0-byte file - this one is gonna get hammered.')
-
-            logger.fdebug('[DUPECHECK] Based on duplication preferences I will retain based on : ' + mylar.CONFIG.DUPECONSTRAINT)
-
-            tmp_dupeconstraint = mylar.CONFIG.DUPECONSTRAINT
-
-            if any(['cbr' in mylar.CONFIG.DUPECONSTRAINT, 'cbz' in mylar.CONFIG.DUPECONSTRAINT]):
-                if 'cbr' in mylar.CONFIG.DUPECONSTRAINT:
-                    if filename.endswith('.cbr'):
-                        #this has to be configured in config - either retain cbr or cbz.
-                        if dupchk['Location'].endswith('.cbr'):
-                            logger.info('[DUPECHECK-CBR PRIORITY] [#' + dupchk['Issue_Number'] + '] BOTH files are in cbr format. Retaining the larger filesize of the two.')
-                            tmp_dupeconstraint = 'filesize'
-                        else:
-                            #keep filename
-                            logger.info('[DUPECHECK-CBR PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining newly scanned in file : ' + filename)
-                            rtnval = {'action':  "dupe_src",
-                                      'to_dupe': os.path.join(series['ComicLocation'], dupchk['Location'])}
-                    else:
-                        if dupchk['Location'].endswith('.cbz'):
-                            logger.info('[DUPECHECK-CBR PRIORITY] [#' + dupchk['Issue_Number'] + '] BOTH files are in cbz format. Retaining the larger filesize of the two.')
-                            tmp_dupeconstraint = 'filesize'
-                        else:
-                            #keep filename
-                            logger.info('[DUPECHECK-CBR PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining newly scanned in file : ' + dupchk['Location'])
-                            rtnval = {'action':  "dupe_file",
-                                      'to_dupe': filename}
-
-                elif 'cbz' in mylar.CONFIG.DUPECONSTRAINT:
-                    if filename.endswith('.cbr'):
-                        if dupchk['Location'].endswith('.cbr'):
-                            logger.info('[DUPECHECK-CBZ PRIORITY] [#' + dupchk['Issue_Number'] + '] BOTH files are in cbr format. Retaining the larger filesize of the two.')
-                            tmp_dupeconstraint = 'filesize'
-                        else:
-                            #keep filename
-                            logger.info('[DUPECHECK-CBZ PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining currently scanned in filename : ' + dupchk['Location'])
-                            rtnval = {'action':  "dupe_file",
-                                      'to_dupe': filename}
-                    else:
-                        if dupchk['Location'].endswith('.cbz'):
-                            logger.info('[DUPECHECK-CBZ PRIORITY] [#' + dupchk['Issue_Number'] + '] BOTH files are in cbz format. Retaining the larger filesize of the two.')
-                            tmp_dupeconstraint = 'filesize'
-                        else:
-                            #keep filename
-                            logger.info('[DUPECHECK-CBZ PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining newly scanned in filename : ' + filename)
-                            rtnval = {'action':  "dupe_src",
-                                      'to_dupe': os.path.join(series['ComicLocation'], dupchk['Location'])}
-
-            if mylar.CONFIG.DUPECONSTRAINT == 'filesize' or tmp_dupeconstraint == 'filesize':
-                if filesz <= int(dupsize) and int(dupsize) != 0:
-                    logger.info('[DUPECHECK-FILESIZE PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining currently scanned in filename : ' + dupchk['Location'])
-                    rtnval = {'action':  "dupe_file",
-                              'to_dupe': filename}
-                else:
-                    logger.info('[DUPECHECK-FILESIZE PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining newly scanned in filename : ' + filename)
-                    rtnval = {'action':  "dupe_src",
-                              'to_dupe': os.path.join(series['ComicLocation'], dupchk['Location'])}
-
-    else:
-        logger.info('[DUPECHECK] Duplication detection returned no hits. This is not a duplicate of anything that I have scanned in as of yet.')
-        rtnval = {'action':  "write"}
+#    import db, logger
+#    myDB = db.DBConnection()
+#
+#    logger.info('[DUPECHECK] Duplicate check for ' + filename)
+#    filesz = os.path.getsize(filename)
+#
+#    if IssueID:
+#        dupchk = myDB.selectone("SELECT * FROM issues WHERE IssueID=?", [IssueID]).fetchone()
+#    if dupchk is None:
+#        dupchk = myDB.selectone("SELECT * FROM annuals WHERE IssueID=?", [IssueID]).fetchone()
+#        if dupchk is None:
+#            logger.info('[DUPECHECK] Unable to find corresponding Issue within the DB. Do you still have the series on your watchlist?')
+#            return
+#
+#    series = myDB.selectone("SELECT * FROM comics WHERE ComicID=?", [dupchk['ComicID']]).fetchone()
+#
+#    #if it's a retry and the file was already snatched, the status is Snatched and won't hit the dupecheck.
+#    #rtnval will be one of 3: 
+#    #'write' - write new file
+#    #'dupe_file' - do not write new file as existing file is better quality
+#    #'dupe_src' - write new file, as existing file is a lesser quality (dupe)
+#
+#    if dupchk['Status'] == 'Downloaded' or dupchk['Status'] == 'Archived':
+#        try:
+#            dupsize = dupchk['ComicSize']
+#        except:
+#            logger.info('[DUPECHECK] Duplication detection returned no hits as this is a new Snatch. This is not a duplicate.')
+#            
+#
+#        logger.info('[DUPECHECK] Existing Status already set to ' + dupchk['Status'])
+#        cid = []
+#        if dupsize is None:
+#            logger.info('[DUPECHECK] Existing filesize is 0 bytes as I cannot locate the orginal entry - it is probably archived.')
+#            logger.fdebug('[DUPECHECK] Checking series for unrefreshed series syndrome (USS).')
+#            havechk = myDB.selectone('SELECT * FROM comics WHERE ComicID=?', [ComicID]).fetchone()
+#            if havechk:
+#                if havechk['Have'] > havechk['Total']:
+#                    logger.info('[DUPECHECK] Series has invalid issue totals [' + str(havechk['Have']) + '/' + str(havechk['Total']) + '] Attempting to Refresh & continue post-processing this issue.')
+#                    cid.append(ComicID)
+#                    logger.fdebug('[DUPECHECK] ComicID: ' + str(ComicID))
+#                    mylar.updater.dbUpdate(ComicIDList=cid, calledfrom='dupechk')
+#                    return duplicate_filecheck(filename, ComicID, IssueID, StoryArcID)
+#                else:
+#                    #file is Archived, but no entry exists in the db for the location. Assume Archived, and don't post-process.
+#                    logger.fdebug('[DUPECHECK] File is Archived but no file can be located within the db at the specified location. Assuming this was a manual archival and will not post-process this issue.')
+#                    rtnval = {'action':  "dont_dupe"}
+#
+#            else:
+#                rtnval = {'action':  "dupe_file",
+#                          'to_dupe': os.path.join(series['ComicLocation'], dupchk['Location'])}
+#        else:
+#            logger.info('[DUPECHECK] Existing file within db :' + dupchk['Location'] + ' has a filesize of : ' + str(dupsize) + ' bytes.')
+#
+#            #keywords to force keep / delete
+#            #this will be eventually user-controlled via the GUI once the options are enabled.
+#
+#            if int(dupsize) == 0:
+#                logger.info('[DUPECHECK] Existing filesize is 0 as I cannot locate the original entry.')
+#                if dupchk['Status'] == 'Archived':
+#                    logger.info('[DUPECHECK] Assuming issue is Archived.')
+#                    rtnval = {'action':  "dupe_file",
+#                              'to_dupe': filename}
+#                    return rtnval
+#                else:
+#                    logger.info('[DUPECHECK] Assuming 0-byte file - this one is gonna get hammered.')
+#
+#            logger.fdebug('[DUPECHECK] Based on duplication preferences I will retain based on : ' + mylar.CONFIG.DUPECONSTRAINT)
+#
+#            tmp_dupeconstraint = mylar.CONFIG.DUPECONSTRAINT
+#
+#            if any(['cbr' in mylar.CONFIG.DUPECONSTRAINT, 'cbz' in mylar.CONFIG.DUPECONSTRAINT]):
+#                if 'cbr' in mylar.CONFIG.DUPECONSTRAINT:
+#                    if filename.endswith('.cbr'):
+#                        #this has to be configured in config - either retain cbr or cbz.
+#                        if dupchk['Location'].endswith('.cbr'):
+#                            logger.info('[DUPECHECK-CBR PRIORITY] [#' + dupchk['Issue_Number'] + '] BOTH files are in cbr format. Retaining the larger filesize of the two.')
+#                            tmp_dupeconstraint = 'filesize'
+#                        else:
+#                            #keep filename
+#                            logger.info('[DUPECHECK-CBR PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining newly scanned in file : ' + filename)
+#                            rtnval = {'action':  "dupe_src",
+#                                      'to_dupe': os.path.join(series['ComicLocation'], dupchk['Location'])}
+#                    else:
+#                        if dupchk['Location'].endswith('.cbz'):
+#                            logger.info('[DUPECHECK-CBR PRIORITY] [#' + dupchk['Issue_Number'] + '] BOTH files are in cbz format. Retaining the larger filesize of the two.')
+#                            tmp_dupeconstraint = 'filesize'
+#                        else:
+#                            #keep filename
+#                            logger.info('[DUPECHECK-CBR PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining newly scanned in file : ' + dupchk['Location'])
+#                            rtnval = {'action':  "dupe_file",
+#                                      'to_dupe': filename}
+#
+#                elif 'cbz' in mylar.CONFIG.DUPECONSTRAINT:
+#                    if filename.endswith('.cbr'):
+#                        if dupchk['Location'].endswith('.cbr'):
+#                            logger.info('[DUPECHECK-CBZ PRIORITY] [#' + dupchk['Issue_Number'] + '] BOTH files are in cbr format. Retaining the larger filesize of the two.')
+#                            tmp_dupeconstraint = 'filesize'
+#                        else:
+#                            #keep filename
+#                            logger.info('[DUPECHECK-CBZ PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining currently scanned in filename : ' + dupchk['Location'])
+#                            rtnval = {'action':  "dupe_file",
+#                                      'to_dupe': filename}
+#                    else:
+#                        if dupchk['Location'].endswith('.cbz'):
+#                            logger.info('[DUPECHECK-CBZ PRIORITY] [#' + dupchk['Issue_Number'] + '] BOTH files are in cbz format. Retaining the larger filesize of the two.')
+#                            tmp_dupeconstraint = 'filesize'
+#                        else:
+#                            #keep filename
+#                            logger.info('[DUPECHECK-CBZ PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining newly scanned in filename : ' + filename)
+#                            rtnval = {'action':  "dupe_src",
+#                                      'to_dupe': os.path.join(series['ComicLocation'], dupchk['Location'])}
+#
+#            if mylar.CONFIG.DUPECONSTRAINT == 'filesize' or tmp_dupeconstraint == 'filesize':
+#                if filesz <= int(dupsize) and int(dupsize) != 0:
+#                    logger.info('[DUPECHECK-FILESIZE PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining currently scanned in filename : ' + dupchk['Location'])
+#                    rtnval = {'action':  "dupe_file",
+#                              'to_dupe': filename}
+#                else:
+#                    logger.info('[DUPECHECK-FILESIZE PRIORITY] [#' + dupchk['Issue_Number'] + '] Retaining newly scanned in filename : ' + filename)
+#                    rtnval = {'action':  "dupe_src",
+#                              'to_dupe': os.path.join(series['ComicLocation'], dupchk['Location'])}
+#
+#    else:
+#        logger.info('[DUPECHECK] Duplication detection returned no hits. This is not a duplicate of anything that I have scanned in as of yet.')
+    rtnval = {'action':  "write"}
     return rtnval
 
 def create_https_certificates(ssl_cert, ssl_key):
