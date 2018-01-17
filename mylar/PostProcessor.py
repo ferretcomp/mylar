@@ -1258,7 +1258,7 @@ class PostProcessor(object):
                             break
                     if dontcheckdupe == 0:
                         dupthis = helpers.duplicate_filecheck(ml['ComicLocation'], ComicID=comicid, IssueID=issueid)
-                        if dupthis[0]['action'] == 'dupe_src' or dupthis[0]['action'] == 'dupe_file':
+                        if dupthis['action'] == 'dupe_src' or dupthis['action'] == 'dupe_file':
                         
                             #check if duplicate dump folder is enabled and if so move duplicate file in there for manual intervention.
                           #'dupe_file' - do not write new file as existing file is better quality
@@ -1270,7 +1270,7 @@ class PostProcessor(object):
                                 continue
 
 
-                        if dupthis[0]['action'] == "write" or dupthis[0]['action'] == 'dupe_src':
+                        if dupthis['action'] == "write" or dupthis['action'] == 'dupe_src':
                         
                           stat = ' [' + str(i) + '/' + str(len(manual_list)) + ']'
                           self.Process_next(comicid, issueid, issuenumOG, ml, stat)
@@ -1285,7 +1285,7 @@ class PostProcessor(object):
                 issuenumOG = issuenzb['Issue_Number']
                 #the self.nzb_folder should contain only the existing filename
                 dupthis = helpers.duplicate_filecheck(self.nzb_folder, ComicID=comicid, IssueID=issueid)
-                if dupthis[0]['action'] == 'dupe_src' or dupthis[0]['action'] == 'dupe_file':
+                if dupthis['action'] == 'dupe_src' or dupthis['action'] == 'dupe_file':
                     #check if duplicate dump folder is enabled and if so move duplicate file in there for manual intervention.
                     #'dupe_file' - do not write new file as existing file is better quality
                     #'dupe_src' - write new file, as existing file is a lesser quality (dupe)
@@ -1301,7 +1301,7 @@ class PostProcessor(object):
 
                                 return self.queue.put(self.valreturn)
  
-                if dupthis[0]['action'] == "write" or dupthis[0]['action'] == 'dupe_src':
+                if dupthis['action'] == "write" or dupthis['action'] == 'dupe_src':
                     return self.Process_next(comicid, issueid, issuenumOG)
                 else:
                     self.valreturn.append({"self.log": self.log,
